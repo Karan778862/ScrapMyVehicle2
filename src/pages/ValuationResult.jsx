@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
+import { submitLead } from '../utils/leadService';
 
 export default function ValuationResult() {
   const location = useLocation();
@@ -19,11 +20,33 @@ export default function ValuationResult() {
   const { brand, model, year, phone, estimate } = data;
 
   const handleConfirmPickup = () => {
+    submitLead({
+      FormType: 'Pickup Confirmed / Booking',
+      Name: `${brand} ${model} Customer`,
+      Phone: phone,
+      VehicleType: data.vehicleType || 'Car',
+      Brand: brand,
+      Model: model,
+      Year: year,
+      Estimate: estimate,
+      Message: `Customer clicked SCHEDULE FREE DOORSTEP PICKUP for ${brand} ${model} (${year}). Estimated Scrap Value: ${estimate?.formattedRange || ''}`
+    });
     navigate('/booking-confirmed', { state: { data } });
   };
 
   const handleCall = (e) => {
     e.preventDefault();
+    submitLead({
+      FormType: 'Call Requested from Valuation',
+      Name: `${brand} ${model} Customer`,
+      Phone: phone,
+      VehicleType: data.vehicleType || 'Car',
+      Brand: brand,
+      Model: model,
+      Year: year,
+      Estimate: estimate,
+      Message: `Customer clicked CALL VALUATION EXPERT for ${brand} ${model} (${year})`
+    });
     navigate('/call-initiated', { state: { data } });
   };
 
@@ -47,7 +70,7 @@ export default function ValuationResult() {
         {/* Valuation Display Box */}
         <div className="modal-valuation-box">
           <div className="modal-valuation-amount">
-            {estimate?.formattedRange || '₹31,000 - ₹39,000'}
+            {estimate?.formattedRange || '₹37,000 - ₹47,000'}
           </div>
           <div className="modal-valuation-label">
             Guaranteed Highest Price | 100% Free Doorstep Pickup

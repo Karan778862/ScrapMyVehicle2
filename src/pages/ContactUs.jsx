@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PhoneCall, Mail, MapPin, Clock, Car, Zap, CheckCircle2 } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
-
-
+import { submitLead } from '../utils/leadService';
 
 export default function ContactUs() {
   useEffect(() => {
@@ -17,18 +16,12 @@ export default function ContactUs() {
     setIsSubmitting(true);
     
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbz4K5TKzqA85IqSAeIssbf8YoYfCb5vlh7Fk8d5AdPVkrCco_or-qkJYM4082H0bCJl/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        },
-        body: JSON.stringify({
-          FormType: 'Contact Us',
-          Name: formData.name,
-          Email: formData.email,
-          Phone: formData.phone,
-          Message: formData.message
-        })
+      await submitLead({
+        FormType: 'Contact Us',
+        Name: formData.name,
+        Email: formData.email,
+        Phone: formData.phone,
+        Message: formData.message
       });
       
       alert('Thank you! Your request has been received. Our team will contact you shortly.');

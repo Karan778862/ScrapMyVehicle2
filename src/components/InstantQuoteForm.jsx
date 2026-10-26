@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { vehicleBrands, vehicleYears, calculateScrapEstimate } from '../data/vehiclesData';
+import { submitLead } from '../utils/leadService';
 import { ArrowRight, Lock, Sparkles, Car, Bike, Truck, Tractor, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -59,26 +60,17 @@ export default function InstantQuoteForm({ onQuoteResult }) {
     // Calculate instant estimation
     const estimate = calculateScrapEstimate(vehicleType, selectedBrand, selectedModel, selectedYear);
 
-    // Send data to Google Sheet silently
-    try {
-      fetch('https://script.google.com/macros/s/AKfycbz4K5TKzqA85IqSAeIssbf8YoYfCb5vlh7Fk8d5AdPVkrCco_or-qkJYM4082H0bCJl/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        },
-        body: JSON.stringify({
-          FormType: 'Instant Quote',
-          VehicleType: vehicleType,
-          Brand: selectedBrand,
-          Model: selectedModel,
-          Year: selectedYear,
-          Phone: mobileNumber,
-          Estimate: estimate
-        })
-      });
-    } catch (err) {
-      console.error('Error submitting to sheet:', err);
-    }
+    // Send data to Google Sheet & trigger Email notification
+    submitLead({
+      FormType: 'Instant Quote',
+      Name: `${selectedBrand} ${selectedModel} Customer`,
+      Phone: mobileNumber,
+      VehicleType: vehicleType,
+      Brand: selectedBrand,
+      Model: selectedModel,
+      Year: selectedYear,
+      Estimate: estimate
+    });
 
     // Trigger confetti celebration effect
     confetti({
@@ -92,6 +84,7 @@ export default function InstantQuoteForm({ onQuoteResult }) {
       setIsSubmitting(false);
       if (onQuoteResult) {
         onQuoteResult({
+          vehicleType,
           brand: selectedBrand,
           model: selectedModel,
           year: selectedYear,
@@ -118,18 +111,12 @@ export default function InstantQuoteForm({ onQuoteResult }) {
     setIsSubmittingCallback(true);
     
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbz4K5TKzqA85IqSAeIssbf8YoYfCb5vlh7Fk8d5AdPVkrCco_or-qkJYM4082H0bCJl/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        },
-        body: JSON.stringify({
-          FormType: 'Callback Request',
-          Name: callbackData.name,
-          Email: callbackData.email,
-          Phone: callbackData.phone,
-          Message: callbackData.message
-        })
+      await submitLead({
+        FormType: 'Callback Request',
+        Name: callbackData.name,
+        Email: callbackData.email,
+        Phone: callbackData.phone,
+        Message: callbackData.message
       });
       
       alert('Thank you! Your callback request has been received.');

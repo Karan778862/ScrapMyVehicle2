@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, Phone, Calendar, ShieldCheck, ArrowRight } from 'lucide-react';
+import { submitLead } from '../utils/leadService';
 
 export default function QuoteResultModal({ data, onClose }) {
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
@@ -9,6 +10,17 @@ export default function QuoteResultModal({ data, onClose }) {
   const { brand, model, year, phone, estimate } = data;
 
   const handleConfirmPickup = () => {
+    submitLead({
+      FormType: 'Pickup Confirmed / Booking',
+      Name: `${brand} ${model} Customer`,
+      Phone: phone,
+      VehicleType: data.vehicleType || 'Car',
+      Brand: brand,
+      Model: model,
+      Year: year,
+      Estimate: estimate,
+      Message: `Customer clicked Schedule Pickup in Modal for ${brand} ${model} (${year}). Estimated Scrap Value: ${estimate?.formattedRange || ''}`
+    });
     setBookingConfirmed(true);
   };
 
