@@ -122,10 +122,14 @@ export function calculateScrapEstimate(type, brand, model, year, condition = 'ol
   const ageFactor = Math.max(0.7, 1.2 - (age * 0.02));
   
   const conditionObj = vehicleConditions.find(c => c.id === condition) || vehicleConditions[0];
+  const standardPrice = Math.round(basePrice * ageFactor * conditionObj.multiplier);
   // Added 20% increase to calculated scrap value as requested by client
-  const finalPrice = Math.round(basePrice * ageFactor * conditionObj.multiplier * 1.20);
+  const finalPrice = Math.round(standardPrice * 1.20);
   
   const step = type === 'Bike' ? 100 : 500;
+  const originalMin = Math.round(standardPrice * 0.92 / step) * step;
+  const originalMax = Math.round(standardPrice * 1.15 / step) * step;
+
   const minRange = Math.round(finalPrice * 0.92 / step) * step;
   const maxRange = Math.round(finalPrice * 1.15 / step) * step;
 
@@ -139,6 +143,8 @@ export function calculateScrapEstimate(type, brand, model, year, condition = 'ol
     min: minRange,
     max: maxRange,
     formattedRange: `₹${minRange.toLocaleString('en-IN')} - ₹${maxRange.toLocaleString('en-IN')}`,
+    originalRange: `₹${originalMin.toLocaleString('en-IN')} - ₹${originalMax.toLocaleString('en-IN')}`,
+    bonusPercent: 20,
     approxWeight
   };
 }

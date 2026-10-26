@@ -69,6 +69,35 @@ export default function ValuationResult() {
 
         {/* Valuation Display Box */}
         <div className="modal-valuation-box">
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: '#16a34a',
+            color: '#ffffff',
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: 800,
+            marginBottom: '8px',
+            letterSpacing: '0.3px',
+            boxShadow: '0 2px 6px rgba(22, 163, 74, 0.3)'
+          }}>
+            <span>🔥 +20% Extra Valuation Added</span>
+          </div>
+
+          {estimate?.originalRange && (
+            <div style={{
+              fontSize: '13px',
+              color: 'var(--slate-500)',
+              textDecoration: 'line-through',
+              fontWeight: 600,
+              marginBottom: '2px'
+            }}>
+              Standard Market Rate: {estimate.originalRange}
+            </div>
+          )}
+
           <div className="modal-valuation-amount">
             {estimate?.formattedRange || '₹37,000 - ₹47,000'}
           </div>
